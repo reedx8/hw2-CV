@@ -7,6 +7,7 @@ import numpy as np
 def ex_find_homography_ransac(list_pairs_matched_keypoints, threshold_ratio_inliers=0.85, threshold_reprojtion_error=3, max_num_trial=1000):
     '''
     Apply RANSAC algorithm to find a homography transformation matrix that align 2 sets of feature points, transform the first set of feature point to the second (e.g. warp image 1 to image 2)
+
     :param list_pairs_matched_keypoints: has the format as a list of pairs of matched points: [[[p1x,p1y],[p2x,p2y]],....]
     :param threshold_ratio_inliers: threshold on the ratio of inliers over the total number of samples, accept the estimated homography if ratio is higher than the threshold
     :param threshold_reprojtion_error: threshold of reprojection error (measured as euclidean distance, in pixels) to determine whether a sample is inlier or outlier
@@ -69,21 +70,19 @@ def ex_extract_and_match_feature(img_1, img_2, ratio_robustness=0.7):
     # ===== 2/ use bruteforce search to find a list of pairs of matched feature points
     # ==============================
     bf = cv2.BFMatcher()
-    list_pairs_matched_keypoints = bf.knnMatch(des_array_1, des_array_2, k=2)
-    # list_pairs_matched_keypoints = []
+    matched_keypoints = bf.knnMatch(des_array_1, des_array_2, k=2)
 
     # Apply ratio test
-    good_matches = []
-    for m, n in list_pairs_matched_keypoints:
+    list_pairs_matched_keypoints = [] # good matches
+    for m, n in matched_keypoints:
         if m.distance < ratio_robustness * n.distance:
-            good_matches.append([m, n])
+            list_pairs_matched_keypoints.append([m, n])
 
-    # line_img = cv2.drawMatchesKnn(gray_1, kp_list_1, gray_2, kp_list_2, good_matches, None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
-    # cv2.imshow("image", line_img)
-    # cv2.waitKey(0)
+    line_img = cv2.drawMatchesKnn(gray_1, kp_list_1, gray_2, kp_list_2, list_pairs_matched_keypoints, None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+    cv2.imshow("image", line_img)
+    cv2.waitKey(0)
 
-    # return list_pairs_matched_keypoints
-    return good_matches
+    return list_pairs_matched_keypoints
 
 def ex_warp_blend_crop_image(img_1,H_1,img_2):
     '''
