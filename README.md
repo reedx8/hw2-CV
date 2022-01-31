@@ -2,7 +2,7 @@
 
 Computer Vision (CV) program (`image_stitching_skeleton.py`) that stitches 2 images together into a panaroma using SIFT algo, BruteForce Matching, and RANSAC algo.
 
-## To-run:
+## To run:
 
 1. `cd` into project folder
 2. run `python3 i*.py` in terminal
